@@ -3,45 +3,56 @@ import send_icon from '../img/send_icon.svg'
 import React, { useState, useEffect } from 'react';
 import ChatMessage from '../chatMessage/ChatMessage';
 
-function Chat({ selectedContact, messagesList, setMessagesList }) {
+function Chat({ selectedChat, messagesList, setMessagesList }) {
     const [chatInput, setChatInput] = useState('');
 
     useEffect(() => {
-        setMessagesList(selectedContact?.messages.map((message, key) => (
-            <ChatMessage {...message} key={key} />
-        )));
-    }, [selectedContact]);
+        if (selectedChat) {
+            async function getMessages() {
+                const res = await fetch(`http://localhost:5000/api/Chats/${selectedChat.id}/Messages`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+                const messages = await res.json();
+                setMessagesList(messages.map((message, id) => (
+                    <ChatMessage {...message} key={id} />
+                )));
+            }
+            getMessages();
+        }
+    }, [selectedChat]);
 
-    const handleMessageSend = () => {
+    const handleMessageSend = async () => {
         if (chatInput.trim() !== '') {
-            const newMessage = {
-                messageText: chatInput,
-                timestamp: getCurrentTime(),
-                sender: 'me',
-                key: new Date().getTime(),
-            };
-            window.activeUser?.contacts[selectedContact.id].addMessage(newMessage);
-            const updatedMessagesList = [...messagesList, <ChatMessage {...newMessage}/>];
+            const res = await fetch(`http://localhost:5000/api/Chats/${selectedChat?.id}/Messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    msg: chatInput
+                })
+            })
+            const newMessage = await res.json();
+            const updatedMessagesList = [<ChatMessage {...newMessage} key={newMessage.id} />, ...messagesList];
             setChatInput('');
             setMessagesList(updatedMessagesList);
         }
     };
 
-    const getCurrentTime = () => {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
-    };
+    const selectedContact = selectedChat?.user;
 
-
-    if (selectedContact) {
+    if (selectedChat) {
         return (
             <div id="main-chat">
                 <div id="main-chat-header">
                     <div id="main-chat-image">
                         <img
-                            src={selectedContact?.image}
+                            src={selectedContact?.profilePic}
                             alt="profile"
                             width={'60px'}
                         />
@@ -50,7 +61,7 @@ function Chat({ selectedContact, messagesList, setMessagesList }) {
                         <tbody>
                             <tr>
                                 <td>
-                                    <div id="main-chat-name">{selectedContact?.name}</div>
+                                    <div id="main-chat-name">{selectedContact?.displayName}</div>
                                 </td>
                             </tr>
                             <tr>

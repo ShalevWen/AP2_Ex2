@@ -1,5 +1,5 @@
-# Exercise 2
-This repository contains the website for the second exercise in the course Advanced programming 2
+# Exercise 3
+This repository contains the website for the third exercise in the course Advanced programming 2
 
 ## Requirements
 In order to run this project you need to have node.js installed on your computer, which you cane get in https://nodejs.org/en/download
@@ -18,7 +18,12 @@ cd AP2_Ex1b/whatsdawn
 npm i react
 ```
 
-Now start the server:
+Start the server:
+```bash
+.......................................
+```
+
+Now start the app:
 
 ```bash
 npm start

@@ -28,21 +28,43 @@ function LoginForm() {
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         if (username.current.value?.trim() === '' || password.current.value?.trim() === '') {
             return;
         }
 
-        if (window.usersList[username.current.value] !== undefined) {
-            const user = window.usersList[username.current.value];
-            if (user.password === password.current.value) {
-                window.activeUser = user;
+        const res = await fetch('http://localhost:5000/api/Tokens', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username.current.value,
+                password: password.current.value
+            })
+        })
+        switch (res.status) {
+            case 200:
+                const token = await res.text();
+                console.log(token);
+                window.localStorage.setItem('token', token);
+                const res2 = await fetch(`http://localhost:5000/api/Users/${username.current.value}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                window.localStorage.setItem('user', JSON.stringify(await res2.json()));
                 navigate('/chat');
-            }
-        }
-        else {
-            alert('Incorrect username or password.');
+                break;
+            case 404:
+                alert('Incorrect username or password.');
+                break;
+            default:
+                alert('Something went wrong, please try again.');
+                break;
         }
     };
     return (
