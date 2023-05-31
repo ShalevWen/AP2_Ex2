@@ -4,8 +4,6 @@ import ChatScreen from './chatScreen/ChatScreen';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
-    window.usersList = {};
-    window.activeUser = null;
     return (
         <BrowserRouter>
             <Routes>

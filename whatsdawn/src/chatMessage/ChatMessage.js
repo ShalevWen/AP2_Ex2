@@ -1,8 +1,15 @@
-function ChatMessage({ messageText, timestamp, sender }) {
+function ChatMessage({ sender, content, created }) {
+    const timeToShow = (time) => {
+        const date = new Date(time);
+        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    };
+    
+    const user = JSON.parse(window.localStorage.getItem('user'));
+
     return (
-        <div className={`message ${sender === 'me' ? 'sent' : 'received'}`}>
-            <div className="message-text">{messageText}</div>
-            <div className="message-time">{timestamp}</div>
+        <div className={`message ${sender.username === user.username ? 'sent' : 'received'}`}>
+            <div className="message-text">{content}</div>
+            <div className="message-time">{timeToShow(created)}</div>
         </div>
     );
 }

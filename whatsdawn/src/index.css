@@ -466,13 +466,17 @@ body:has(#chat-container) #site-logo {
   background-color: #eae6df;
   background-image: url('img/chat_bg.png');
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: normal;
   overflow-y: scroll;
 }
 
 #main-chat-body::-webkit-scrollbar {
   width: 7px;
+  background-color: transparent;
+}
+
+#main-chat-body::-webkit-scrollbar-thumb {
   background-color: darkgray;
 }
 
