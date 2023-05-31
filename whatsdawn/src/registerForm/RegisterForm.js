@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import User from '../user/User';
 
 function RegisterForm() {
     const username = useRef(null);
@@ -20,9 +19,6 @@ function RegisterForm() {
     const checkUsername = function () {
         if (username.current.value.trim() === '') {
             setUsernameError('Please enter a username.');
-        }
-        else if (window.usersList[username.current.value] !== undefined) {
-            setUsernameError('Username already exists.');
         }
         else {
             setUsernameError('');
@@ -99,11 +95,31 @@ function RegisterForm() {
 
         const file = document.getElementById('picture').files[0];
         const reader = new FileReader();
-        reader.onloadend = () => {
-            const user = new User(username.current.value, password.current.value, displayname.current.value, reader.result);
-            window.usersList[username.current.value] = user;
-            alert('Registration successful.');
-            navigate('/');
+        reader.onloadend = async () => {
+            const res = await fetch('http://localhost:5000/api/Users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'username': username.current.value,
+                    'password': password.current.value,
+                    'displayName': displayname.current.value,
+                    'profilePic': reader.result
+                })
+            })
+            switch (res.status) {
+                case 200:
+                    alert('Registration successful.');
+                    navigate('/');
+                    break;
+                case 409:
+                    setUsernameError('Username already exists.');
+                    break;
+                default:
+                    alert('Something went wrong, please try again.');
+                    break;
+            }
         };
         reader.readAsDataURL(file);
 

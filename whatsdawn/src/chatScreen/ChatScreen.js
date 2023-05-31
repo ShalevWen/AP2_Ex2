@@ -7,11 +7,11 @@ import SideBar from '../sideBar/SideBar';
 
 function ChatScreen() {
     const navigate = useNavigate();
-    const [selectedContact, setSelectedContact] = useState(null);
+    const [selectedChat, setSelectedChat] = useState(null);
     const [messagesList, setMessagesList] = useState([]);
 
     useEffect(() => {
-        if (window.activeUser === null) {
+        if (window.localStorage.user === undefined) {
             navigate('/');
         }
     });
@@ -20,12 +20,12 @@ function ChatScreen() {
         <>
             <div id="chat-container">
                 <SideBar
-                    selectedContact={selectedContact}
-                    setSelectedContact={setSelectedContact}
+                    selectedChat={selectedChat}
+                    setSelectedChat={setSelectedChat}
                     messagesList={messagesList}
                 />
                 <Chat
-                    selectedContact={selectedContact}
+                    selectedChat={selectedChat}
                     messagesList={messagesList}
                     setMessagesList={setMessagesList}
                 />

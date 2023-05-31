@@ -3,53 +3,83 @@ import logout_button from '../img/logout.svg';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SideBarContact from '../sideBarContact/SideBarContact';
-import Contact from '../contact/Contact';
 
-function SideBar({ selectedContact, setSelectedContact, messagesList }) {
+function SideBar({ selectedChat, setSelectedChat, messagesList }) {
     const navigate = useNavigate();
-    const [contactsList, setContactsList] = useState([]);
+    const [chatsList, setChatsList] = useState([]);
 
     useEffect(() => {
-        setContactsList(Object.values(window.activeUser?.contacts).map((contact) => (
-            <SideBarContact
-                {...contact}
-                key={contact.id}
-                onClick={() => handleContactClick(contact)}
-                isSelected={contact.id === selectedContact?.id}
-            />
-        )));
-    }, [selectedContact, messagesList]);
+        async function getChats() {
+            const res = await fetch('http://localhost:5000/api/Chats', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            const chats = await res.json();
+            setChatsList(chats.map((chat) => (
+                <SideBarContact
+                    {...chat}
+                    key={chat.id}
+                    onClick={() => handleContactClick(chat)}
+                    isSelected={chat.id === selectedChat?.id}
+                />
+            )).sort((a, b) => {
+                return new Date(b.lastMessage?.created) - new Date(a.lastMessage?.created);
+            }));
+        }
+        getChats();
+    }, [selectedChat, messagesList]);
 
-    const handleAddContact = (event) => {
+    const handleAddContact = async (event) => {
         event.preventDefault();
         const newContactName = event.target.contactName.value.trim();
         if (newContactName !== '') {
-            const newContact = new Contact(newContactName);
-            window.activeUser?.addContact(newContact);
+            const res = await fetch('http://localhost:5000/api/Chats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    username: newContactName
+                })
+            })
+            switch (res.status) {
+                case 200:
+                    const newContact = await res.json();
+                    const newSideBarContact = <SideBarContact
+                        {...newContact}
+                        key={newContact.username}
+                        onClick={() => handleContactClick(newContact)}
+                        isSelected={false} />;
 
-            const newSideBarContact = <SideBarContact
-                {...newContact}
-                key={newContact.id}
-                onClick={() => handleContactClick(newContact)}
-                isSelected={false} />;
-
-            setContactsList(contactsList ?
-                [...contactsList, newSideBarContact]
-                : [newSideBarContact]);
-            setSelectedContact(newContact);
+                    setChatsList(chatsList ?
+                        [...chatsList, newSideBarContact]
+                        : [newSideBarContact]);
+                    setSelectedChat(newContact);
+                    break;
+                case 400:
+                    alert('User not found.');
+                    return;
+            }
         }
         event.target.reset();
     };
 
     const handleContactClick = (contact) => {
-        setSelectedContact(contact);
+        setSelectedChat(contact);
     };
 
     const handleLogout = (event) => {
         event.preventDefault();
-        window.activeUser = null;
+        window.localStorage.removeItem('user');
+        window.localStorage.removeItem('token');
         navigate('/');
     };
+
+    const user = JSON.parse(window.localStorage?.user);
 
     return (
         <>
@@ -57,12 +87,12 @@ function SideBar({ selectedContact, setSelectedContact, messagesList }) {
                 <div id="side-bar-header">
                     <div id="profile-image">
                         <img
-                            src={window.activeUser?.picture}
+                            src={user?.profilePic}
                             alt="profile"
                             width={'60px'}
                         />
                     </div>
-                    <div id="profile-name">{window.activeUser?.name}</div>
+                    <div id="profile-name">{user?.displayName}</div>
                     <button
                         id="add-contact"
                         className="btn"
@@ -85,7 +115,7 @@ function SideBar({ selectedContact, setSelectedContact, messagesList }) {
                     <input type="text" placeholder="Search" />
                 </div>
                 <hr />
-                {contactsList}
+                {chatsList}
             </div>
             <div className="modal fade" id="add-contact-modal" tabIndex="-1">
                 <div className="modal-dialog">
@@ -93,7 +123,7 @@ function SideBar({ selectedContact, setSelectedContact, messagesList }) {
                         <div className="modal-body">
                             <h3 className="modal-title">Add contact</h3>
                             <form onSubmit={handleAddContact}>
-                                <input type="text" name="contactName" placeholder="Enter contact name" />
+                                <input type="text" name="contactName" placeholder="Enter contact username" />
                                 <div>
                                     <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                                         Cancel
