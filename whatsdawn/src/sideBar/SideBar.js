@@ -14,17 +14,17 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${sessionStorage.token}`
                 }
             })
             const chats = await res.json();
             setChatsList(chats.map((chat) => (
-                <SideBarContact
-                    {...chat}
-                    key={chat.id}
-                    onClick={() => handleContactClick(chat)}
-                    isSelected={chat.id === selectedChat?.id}
-                />
+                    <SideBarContact
+                        {...chat}
+                        key={chat.id}
+                        onClick={() => handleContactClick(chat)}
+                        isSelected={chat.id === selectedChat?.id}
+                    />
             )).sort((a, b) => {
                 return new Date(b.lastMessage?.created) - new Date(a.lastMessage?.created);
             }));
@@ -40,7 +40,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${sessionStorage.token}`
                 },
                 body: JSON.stringify({
                     username: newContactName
@@ -63,6 +63,8 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
                 case 400:
                     alert('User not found.');
                     return;
+                default:
+                    alert('Something went wrong.');
             }
         }
         event.target.reset();
@@ -74,12 +76,12 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
 
     const handleLogout = (event) => {
         event.preventDefault();
-        window.localStorage.removeItem('user');
-        window.localStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('token');
         navigate('/');
     };
 
-    const user = JSON.parse(window.localStorage?.user);
+    const user = JSON.parse(sessionStorage.user ?? '{}');
 
     return (
         <>

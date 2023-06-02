@@ -13,7 +13,7 @@ function Chat({ selectedChat, messagesList, setMessagesList }) {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${sessionStorage.token}`
                     }
                 })
                 const messages = await res.json();
@@ -31,7 +31,7 @@ function Chat({ selectedChat, messagesList, setMessagesList }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${sessionStorage.token}`
                 },
                 body: JSON.stringify({
                     msg: chatInput

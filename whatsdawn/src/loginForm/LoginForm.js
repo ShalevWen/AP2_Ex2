@@ -47,8 +47,7 @@ function LoginForm() {
         switch (res.status) {
             case 200:
                 const token = await res.text();
-                console.log(token);
-                window.localStorage.setItem('token', token);
+                sessionStorage.token = token;
                 const res2 = await fetch(`http://localhost:5000/api/Users/${username.current.value}`, {
                     method: 'GET',
                     headers: {
@@ -56,7 +55,7 @@ function LoginForm() {
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                window.localStorage.setItem('user', JSON.stringify(await res2.json()));
+                sessionStorage.user = JSON.stringify(await res2.json());
                 navigate('/chat');
                 break;
             case 404:

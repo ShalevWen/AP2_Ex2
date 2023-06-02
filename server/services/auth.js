@@ -1,18 +1,19 @@
-const JWT = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
-const checkAuth = (req) => {
+const checkAuth = (req, res, next) => {
     if (!req.headers.authorization) {
-        return null;
+        return res.status(401).send();
     }
     if (!req.headers.authorization.startsWith('Bearer ')) {
-        return null;
+        return res.status(401).send();
     }
     const token = req.headers.authorization.split(' ')[1];
-    const decoded = JWT.verify(token, 'secret');
-    if (!decoded) {
-        return null;
+    try {
+        req.username = jwt.verify(token, 'secret');
+        return next();
+    } catch (err) {
+        return res.status(401).send();
     }
-    return decoded;
 }
 
 module.exports = { checkAuth };

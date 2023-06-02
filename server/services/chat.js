@@ -51,7 +51,7 @@ const getChatsByUsername = async (username) => {
     const chats = await Chat.find({ users: { $elemMatch: { username: username } } })
     for (var i = 0; i < chats.length; i++) {
         const user = chats[i].users.filter(user => user.username !== username)[0];
-        const lastMessageId = chats[i].messages[0] ? chats[i].messages[0] : null;
+        const lastMessageId = chats[i].messages[0] ?? null;
         chats[i] =  {
             id: chats[i]._id,
             user: {
@@ -68,7 +68,6 @@ const getChatsByUsername = async (username) => {
 const addMessage = async (chatId, messageData) => {
     const message = new Message(messageData);
     await message.save();
-    console.log(message)
     await Chat.updateOne({ _id: chatId }, {
         $push: {
             messages: {

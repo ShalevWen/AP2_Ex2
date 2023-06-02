@@ -1,8 +1,10 @@
-const user = require('../models/user');
 const userService = require('../services/user');
 const { checkAuth } = require('../services/auth');
 
 const createUser = async (req, res) => {
+    if (!req.body.username || !req.body.password || !req.body.displayName || !req.body.profilePic) {
+        return res.status(400).send();
+    }
     const user = await userService.getUserByUsername(req.body.username);
     if (user) {
         return res.status(409).send();
@@ -12,8 +14,7 @@ const createUser = async (req, res) => {
 }
 
 const getUserByUsername = async (req, res) => {
-    const userename = checkAuth(req);
-    if (!userename || userename !== req.params.username) {
+    if (req.username !== req.params.username) {
         return res.status(401).send();
     }
     const user = await userService.getUserByUsername(req.params.username);
