@@ -5,16 +5,23 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://127.0.0.1/whatsdawn', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
+
 const cors = require('cors');
 app.use(cors());
 
-const api = require('./routes/api');
-app.use('/api', api);
+const customEnv = require('custom-env');
+customEnv.env(process.env.NODE_ENV, './config');
+
+app.use('/api', require('./routes/api'));
 
 app.get('/', (_, res) => {
     res.redirect('http://localhost:3000');
 });
 
-console.log('Server listening on port 6000');
-app.listen(6000)
-console.log('Server listening on port 6000');
+app.listen(process.env.PORT)
+console.log('Server running on port ' + process.env.PORT);

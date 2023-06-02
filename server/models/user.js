@@ -9,6 +9,5 @@ const User = new Schema({
     profilePic: String
 });
 
-// const connection = mongoose.createConnection('mongodb://localhost:27017/whatsdawn', { useNewUrlParser: true, useUnifiedTopology: true });
-// module.exports = connection.model('User', User);
-module.exports = mongoose.model('User', User);
+const connection = mongoose.createConnection('mongodb://127.0.0.1:27017/whatsdawn', { useNewUrlParser: true, useUnifiedTopology: true });
+module.exports = connection.model('User', User);

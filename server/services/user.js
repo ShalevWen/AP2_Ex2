@@ -13,7 +13,10 @@ const createUser = async (user) => {
 }
 
 const getUserByUsername = async (username) => {
-    const user = await User.findOne({ username: username });
+    const user = await User.findOne({username: username});
+    if (!user) {
+        return null;
+    }
     return {
         username: user.username,
         displayName: user.displayName,
