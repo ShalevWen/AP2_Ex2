@@ -11,7 +11,7 @@ function ChatScreen() {
     const [messagesList, setMessagesList] = useState([]);
 
     useEffect(() => {
-        if (window.localStorage.user === undefined) {
+        if (!sessionStorage.user) {
             navigate('/');
         }
     });

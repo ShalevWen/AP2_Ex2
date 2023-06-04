@@ -12,11 +12,11 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
 
     useEffect(() => {
         async function getChats() {
-            const res = await fetch('http://localhost:5000/api/Chats', {
+            const res = await fetch(`${sessionStorage.server}/Chats`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${sessionStorage.token}`
                 }
             })
             const chats = await res.json();
@@ -39,11 +39,11 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
         event.preventDefault();
         const newContactName = event.target.contactName.value.trim();
         if (newContactName !== '') {
-            const res = await fetch('http://localhost:5000/api/Chats', {
+            const res = await fetch(`${sessionStorage.server}/Chats`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${sessionStorage.token}`
                 },
                 body: JSON.stringify({
                     username: newContactName
@@ -66,6 +66,8 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
                 case 400:
                     alert('User not found.');
                     return;
+                default:
+                    alert('Something went wrong.');
             }
         }
         event.target.reset();
@@ -77,12 +79,12 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
 
     const handleLogout = (event) => {
         event.preventDefault();
-        window.localStorage.removeItem('user');
-        window.localStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('token');
         navigate('/');
     };
 
-    const user = JSON.parse(window.localStorage?.user);
+    const user = JSON.parse(sessionStorage.user ?? '{}');
 
     return (
         <>

@@ -96,7 +96,7 @@ function RegisterForm() {
         const file = document.getElementById('picture').files[0];
         const reader = new FileReader();
         reader.onloadend = async () => {
-            const res = await fetch('http://localhost:5000/api/Users', {
+            const res = await fetch(`${sessionStorage.server}/Users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
