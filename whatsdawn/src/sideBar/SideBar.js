@@ -10,7 +10,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
 
     useEffect(() => {
         async function getChats() {
-            const res = await fetch('${sessionStorage.server}/Chats', {
+            const res = await fetch(`${sessionStorage.server}/Chats`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
         event.preventDefault();
         const newContactName = event.target.contactName.value.trim();
         if (newContactName !== '') {
-            const res = await fetch('${sessionStorage.server}/Chats', {
+            const res = await fetch(`${sessionStorage.server}/Chats`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

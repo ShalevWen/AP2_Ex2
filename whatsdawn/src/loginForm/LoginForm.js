@@ -34,7 +34,7 @@ function LoginForm() {
             return;
         }
 
-        const res = await fetch('${sessionStorage.server}/Tokens', {
+        const res = await fetch(`${sessionStorage.server}/Tokens`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

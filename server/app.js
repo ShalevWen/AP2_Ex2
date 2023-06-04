@@ -20,6 +20,9 @@ customEnv.env(process.env.NODE_ENV, './config');
 app.use('/api', require('./routes/api'));
 
 app.use(express.static('public'));
+app.get('*', (_, res) => {
+    res.redirect('/');
+});
 
 app.listen(process.env.PORT)
 console.log('Server running on port ' + process.env.PORT);
