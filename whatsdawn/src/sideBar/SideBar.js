@@ -3,10 +3,12 @@ import logout_button from '../img/logout.svg';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SideBarContact from '../sideBarContact/SideBarContact';
+import SearchBar from '../searchBar/SearchBar';
 
 function SideBar({ selectedChat, setSelectedChat, messagesList }) {
     const navigate = useNavigate();
     const [chatsList, setChatsList] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         async function getChats() {
@@ -18,19 +20,20 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
                 }
             })
             const chats = await res.json();
-            setChatsList(chats.map((chat) => (
+            setChatsList(chats
+                .filter((chat) => chat.user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+                .sort((a, b) => new Date(b.lastMessage?.created) - new Date(a.lastMessage?.created))
+                .map((chat) =>
                     <SideBarContact
                         {...chat}
                         key={chat.id}
                         onClick={() => handleContactClick(chat)}
                         isSelected={chat.id === selectedChat?.id}
                     />
-            )).sort((a, b) => {
-                return new Date(b.lastMessage?.created) - new Date(a.lastMessage?.created);
-            }));
+                ));
         }
         getChats();
-    }, [selectedChat, messagesList]);
+    }, [searchQuery, selectedChat, messagesList]);
 
     const handleAddContact = async (event) => {
         event.preventDefault();
@@ -113,9 +116,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
                     </button>
                 </div>
                 <hr />
-                <div id="contacts-search">
-                    <input type="text" placeholder="Search" />
-                </div>
+                <SearchBar setSearchQuery={setSearchQuery} />
                 <hr />
                 {chatsList}
             </div>
