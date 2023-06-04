@@ -9,7 +9,7 @@ function Chat({ selectedChat, messagesList, setMessagesList }) {
     useEffect(() => {
         if (selectedChat) {
             async function getMessages() {
-                const res = await fetch(`http://localhost:5000/api/Chats/${selectedChat.id}/Messages`, {
+                const res = await fetch(`${sessionStorage.server}/Chats/${selectedChat.id}/Messages`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ function Chat({ selectedChat, messagesList, setMessagesList }) {
 
     const handleMessageSend = async () => {
         if (chatInput.trim() !== '') {
-            const res = await fetch(`http://localhost:5000/api/Chats/${selectedChat?.id}/Messages`, {
+            const res = await fetch(`${sessionStorage.server}/Chats/${selectedChat?.id}/Messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

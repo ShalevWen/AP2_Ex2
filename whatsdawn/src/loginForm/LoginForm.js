@@ -34,7 +34,7 @@ function LoginForm() {
             return;
         }
 
-        const res = await fetch('http://localhost:5000/api/Tokens', {
+        const res = await fetch('${sessionStorage.server}/Tokens', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -48,7 +48,7 @@ function LoginForm() {
             case 200:
                 const token = await res.text();
                 sessionStorage.token = token;
-                const res2 = await fetch(`http://localhost:5000/api/Users/${username.current.value}`, {
+                const res2 = await fetch(`${sessionStorage.server}/Users/${username.current.value}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
