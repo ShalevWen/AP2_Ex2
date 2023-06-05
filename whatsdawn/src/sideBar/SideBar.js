@@ -12,7 +12,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
 
     useEffect(() => {
         async function getChats() {
-            const res = await fetch(`${sessionStorage.server}/Chats`, {
+            const res = await fetch(`${sessionStorage.server}/api/Chats`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
         event.preventDefault();
         const newContactName = event.target.contactName.value.trim();
         if (newContactName !== '') {
-            const res = await fetch(`${sessionStorage.server}/Chats`, {
+            const res = await fetch(`${sessionStorage.server}/api/Chats`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -52,16 +52,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
             switch (res.status) {
                 case 200:
                     const newContact = await res.json();
-                    const newSideBarContact = <SideBarContact
-                        {...newContact}
-                        key={newContact.username}
-                        onClick={() => handleContactClick(newContact)}
-                        isSelected={false} />;
-
-                    setChatsList(chatsList ?
-                        [...chatsList, newSideBarContact]
-                        : [newSideBarContact]);
-                    setSelectedChat(newContact);
+                    setSelectedChat({...newContact, timeStamp : new Date()});
                     break;
                 case 400:
                     alert('User not found.');
@@ -74,7 +65,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
     };
 
     const handleContactClick = (contact) => {
-        setSelectedChat(contact);
+        setSelectedChat({...contact, timeStamp : new Date()});
     };
 
     const handleLogout = (event) => {

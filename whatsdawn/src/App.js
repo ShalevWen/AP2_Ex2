@@ -4,8 +4,8 @@ import ChatScreen from './chatScreen/ChatScreen';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
-    const port = 5000
-    sessionStorage.server = "http://" + window.location.hostname + ":" + port + "/api"
+    const serverPort = 3030
+    sessionStorage.server = `http://${window.location.hostname}:${serverPort}`;
     return (
         <BrowserRouter>
             <Routes>
