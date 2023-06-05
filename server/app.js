@@ -6,23 +6,19 @@ const app = express();
 app.use(cors());
 
 const server = http.createServer(app);
-//const io = new Server(server);
-const io = new Server(server,{cors:{
-    origin:'http://localhost:3000',
-    methods:['GET','POST'],
-    credentials:true
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+        credentials: true
     }
-    })
-    const myMap = {};
-    io.on('connection', (socket) => {
-        // console.log('New client connected');
-      
-        socket.on('message', () => {
-          socket.broadcast.emit('message', null);
-        });
-      
-      });
-      
+});
+
+io.on('connection', (socket) => {
+    socket.on('message', () => {
+        socket.broadcast.emit('message', null);
+    });
+});
+
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));

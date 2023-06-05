@@ -4,7 +4,7 @@ function ChatMessage({ sender, content, created }) {
         return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     };
     
-    const user = JSON.parse(sessionStorage.getItem('user'));
+    const user = JSON.parse(sessionStorage.user);
 
     return (
         <div className={`message ${sender.username === user.username ? 'sent' : 'received'}`}>

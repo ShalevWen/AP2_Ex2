@@ -4,10 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import ChatMessage from '../chatMessage/ChatMessage';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:3030');
-if (socket.id === undefined) {
-    console.log('didnt connect');
-}
+const socket = io(sessionStorage.server);
 
 socket.on('connect', () => {
     console.log('Connection established');
@@ -17,10 +14,9 @@ function Chat({ selectedChat, setSelectedChat, messagesList, setMessagesList }) 
     const [chatInput, setChatInput] = useState('');
 
     useEffect(() => {
-        console.log("in use effect");
         if (selectedChat.user) {
             async function getMessages() {
-                const res = await fetch(`${sessionStorage.server}/Chats/${selectedChat.id}/Messages`, {
+                const res = await fetch(`${sessionStorage.server}/api/Chats/${selectedChat.id}/Messages`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -42,7 +38,7 @@ function Chat({ selectedChat, setSelectedChat, messagesList, setMessagesList }) 
 
     const handleMessageSend = async () => {
         if (chatInput.trim() !== '') {
-            const res = await fetch(`${sessionStorage.server}/Chats/${selectedChat?.id}/Messages`, {
+            const res = await fetch(`${sessionStorage.server}/api/Chats/${selectedChat?.id}/Messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
