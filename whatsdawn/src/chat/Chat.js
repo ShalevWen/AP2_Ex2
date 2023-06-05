@@ -1,29 +1,44 @@
-import '../index.css'
-import send_icon from '../img/send_icon.svg'
-import React, { useState, useEffect } from 'react';
+import '../index.css';
+import send_icon from '../img/send_icon.svg';
+import React, { useState, useEffect, useCallback } from 'react';
 import ChatMessage from '../chatMessage/ChatMessage';
+import { io } from 'socket.io-client';
 
-function Chat({ selectedChat, messagesList, setMessagesList }) {
+const socket = io('http://localhost:3030');
+if (socket.id === undefined) {
+    console.log('didnt connect');
+}
+
+socket.on('connect', () => {
+    console.log('Connection established');
+});
+
+function Chat({ selectedChat, setSelectedChat, messagesList, setMessagesList }) {
     const [chatInput, setChatInput] = useState('');
 
     useEffect(() => {
-        if (selectedChat) {
+        console.log("in use effect");
+        if (selectedChat.user) {
             async function getMessages() {
                 const res = await fetch(`${sessionStorage.server}/Chats/${selectedChat.id}/Messages`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${sessionStorage.token}`
-                    }
-                })
+                        Authorization: `Bearer ${sessionStorage.token}`,
+                    },
+                });
                 const messages = await res.json();
-                setMessagesList(messages.map((message, id) => (
-                    <ChatMessage {...message} key={id} />
-                )));
+                setMessagesList(messages.map((message) => <ChatMessage {...message} key={message.id} />));
             }
             getMessages();
         }
-    }, [selectedChat]);
+    }, [selectedChat, setMessagesList]);
+
+    const handleMessageReceived = useCallback(() => {
+        setSelectedChat({ ...selectedChat, timeStamp : new Date() });
+    });
+
+    socket.on('message', handleMessageReceived);
 
     const handleMessageSend = async () => {
         if (chatInput.trim() !== '') {
@@ -31,31 +46,28 @@ function Chat({ selectedChat, messagesList, setMessagesList }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${sessionStorage.token}`
+                    Authorization: `Bearer ${sessionStorage.token}`,
                 },
                 body: JSON.stringify({
-                    msg: chatInput
-                })
-            })
+                    msg: chatInput,
+                }),
+            });
             const newMessage = await res.json();
             const updatedMessagesList = [<ChatMessage {...newMessage} key={newMessage.id} />, ...messagesList];
             setChatInput('');
             setMessagesList(updatedMessagesList);
+            socket.emit('message', null);
         }
     };
 
     const selectedContact = selectedChat?.user;
 
-    if (selectedChat) {
+    if (selectedChat.user) {
         return (
             <div id="main-chat">
                 <div id="main-chat-header">
                     <div id="main-chat-image">
-                        <img
-                            src={selectedContact?.profilePic}
-                            alt="profile"
-                            width={'60px'}
-                        />
+                        <img src={selectedContact?.profilePic} alt="profile" width={'60px'} />
                     </div>
                     <table>
                         <tbody>
@@ -93,9 +105,7 @@ function Chat({ selectedChat, messagesList, setMessagesList }) {
             </div>
         );
     } else {
-        return (
-            <div id="main-chat" className='empty-main-chat' />
-        );
+        return <div id="main-chat" className="empty-main-chat" />;
     }
 }
 

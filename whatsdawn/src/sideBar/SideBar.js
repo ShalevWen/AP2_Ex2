@@ -52,16 +52,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
             switch (res.status) {
                 case 200:
                     const newContact = await res.json();
-                    const newSideBarContact = <SideBarContact
-                        {...newContact}
-                        key={newContact.username}
-                        onClick={() => handleContactClick(newContact)}
-                        isSelected={false} />;
-
-                    setChatsList(chatsList ?
-                        [...chatsList, newSideBarContact]
-                        : [newSideBarContact]);
-                    setSelectedChat(newContact);
+                    setSelectedChat({...newContact, timeStamp : new Date()});
                     break;
                 case 400:
                     alert('User not found.');
@@ -74,7 +65,7 @@ function SideBar({ selectedChat, setSelectedChat, messagesList }) {
     };
 
     const handleContactClick = (contact) => {
-        setSelectedChat(contact);
+        setSelectedChat({...contact, timeStamp : new Date()});
     };
 
     const handleLogout = (event) => {

@@ -14,13 +14,8 @@ git clone https://github.com/ShalevWen/AP2_Ex1b.git
 
 The next step will be to setup react in the project's directory:
 ```bash
-cd AP2_Ex1b/whatsdawn
-npm i react
-```
-
-Start the server:
-```bash
-.......................................
+cd AP2_Ex2/server
+npm install
 ```
 
 Now start the app:

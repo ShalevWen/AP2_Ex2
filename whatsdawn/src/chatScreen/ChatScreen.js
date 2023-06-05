@@ -7,7 +7,7 @@ import SideBar from '../sideBar/SideBar';
 
 function ChatScreen() {
     const navigate = useNavigate();
-    const [selectedChat, setSelectedChat] = useState(null);
+    const [selectedChat, setSelectedChat] = useState({timeStamp : new Date()});
     const [messagesList, setMessagesList] = useState([]);
 
     useEffect(() => {
@@ -26,6 +26,7 @@ function ChatScreen() {
                 />
                 <Chat
                     selectedChat={selectedChat}
+                    setSelectedChat={setSelectedChat}
                     messagesList={messagesList}
                     setMessagesList={setMessagesList}
                 />
